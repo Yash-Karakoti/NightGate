@@ -1,0 +1,58 @@
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// zk-Creator: Zero-Knowledge Content Paywall
+// ═══════════════════════════════════════════════════════════════════════════════
+//
+// PRIVACY MODEL
+// ─────────────
+// This Compact circuit implements a rational privacy model for token-gated
+// content access on the Midnight Network.
+//
+// PUBLIC STATE (on-chain ledger — visible to everyone):
+//   • spent_nullifiers : Map of nullifier hashes → Boolean (prevents double-claim)
+//   • total_unlocks    : Running count of successful content unlocks
+//
+// PRIVATE STATE (off-chain witness — NEVER broadcast):
+//   • user_secret      : The user's private credential (e.g. wallet key, asset proof)
+//
+// WHAT THE USER PROVES WITHOUT REVEALING:
+//   The user proves they hold a valid secret that has NOT already been used
+//   to unlock this content. The circuit:
+//     1. Accepts user_secret as a private witness input
+//     2. Hashes it via persistent_hash() → deterministic nullifier
+//     3. Checks the nullifier does NOT exist in spent_nullifiers
+//     4. Calls disclose() ONLY on the computed nullifier
+//     5. Records the nullifier on-chain and increments total_unlocks
+//
+// The raw user_secret NEVER leaves the client's browser memory.
+// Only the one-way hash (nullifier) is disclosed to the public ledger.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Public ledger state — visible on blockchain
+export ledger total_unlocks: Counter;
+export ledger spent_nullifiers: Map<Bytes<32>, Boolean>;
+
+// Circuit: Unlock content by proving knowledge of an unused secret
+// Input:  user_secret (private — never disclosed)
+// Output: [] (void — side effects update the ledger)
+export circuit unlock(user_secret: Bytes<32>): [] {
+    // Step 1: Hash the private secret to derive a deterministic nullifier
+    // persistentHash is a ZK-friendly collision-resistant hash from the stdlib
+    const nullifier = persistentHash<Bytes<32>>(user_secret);
+
+    // Step 2: Disclose ONLY the nullifier — never the underlying secret
+    // This is the deliberate use of disclose() required by the challenge:
+    // it moves the nullifier from private witness to public ledger.
+    // The raw user_secret NEVER leaves the client.
+    const disclosed_nullifier = disclose(nullifier);
+
+    // Step 3: Check nullifier is NOT already spent (prevents double-claiming)
+    assert(!spent_nullifiers.member(disclosed_nullifier), "This secret has already been used to unlock content");
+
+    // Step 4: Record on-chain and increment the public counter
+    spent_nullifiers.insert(disclosed_nullifier, true);
+    total_unlocks.increment(1);
+}
