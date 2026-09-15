@@ -15,6 +15,8 @@
 **Try the live frontend here:** [nightgate.netlify.app](https://nightgate.netlify.app)  
 *(Note: Requires the Lace Wallet extension connected to the Midnight Preprod network).*
 
+**Deployed Preprod Contract:** `d9feb2468cb2325da4bb6709d5b278631d3f113fda43265a032d21db4cb066db`
+
 ![NightGate Dashboard](public/image.png)
 
 ---
