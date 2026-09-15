@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import netlify from "@netlify/vite-plugin-tanstack-start";
 import tailwindcss from "@tailwindcss/vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
@@ -17,16 +18,10 @@ export default defineConfig({
     }),
     tailwindcss(),
     tanstackStart(),
+    netlify(),
     react(),
     tsconfigPaths()
   ],
-  tanstackStart: {
-    ssr: false,
-    server: { 
-      preset: "vercel",
-      entry: "server" 
-    },
-  },
   build: {
     target: "esnext", // Required for top-level await in Compact generated code
   },
