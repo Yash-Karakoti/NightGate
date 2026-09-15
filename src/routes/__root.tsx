@@ -79,12 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "zk-Creator · Private publishing on Midnight" },
       { name: "description", content: "Private content access powered by local zero-knowledge proofs on Midnight Network." },
-      { name: "author", content: "Lovable" },
       { property: "og:title", content: "zk-Creator · Private publishing on Midnight" },
       { property: "og:description", content: "Private content access powered by local zero-knowledge proofs on Midnight Network." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
