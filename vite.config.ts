@@ -21,6 +21,7 @@ export default defineConfig({
     tsconfigPaths()
   ],
   tanstackStart: {
+    ssr: false,
     server: { 
       preset: "vercel",
       entry: "server" 
