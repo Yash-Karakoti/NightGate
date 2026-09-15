@@ -21,7 +21,10 @@ export default defineConfig({
     tsconfigPaths()
   ],
   tanstackStart: {
-    server: { entry: "server" },
+    server: { 
+      preset: "vercel",
+      entry: "server" 
+    },
   },
   build: {
     target: "esnext", // Required for top-level await in Compact generated code
