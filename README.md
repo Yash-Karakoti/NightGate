@@ -1,30 +1,53 @@
-# zk-Creator: Zero-Knowledge Content Paywall
+# NightGate: Zero-Knowledge Content Paywall
 
 **Built for the Midnight Builderathon (Wave 1)**
 
 [![Midnight Preprod](https://img.shields.io/badge/Midnight-Preprod-blueviolet?style=for-the-badge&logo=shield)](https://midnight.network)
 [![Compact Language](https://img.shields.io/badge/Smart%20Contracts-Compact%20v0.23-teal?style=for-the-badge)](https://docs.midnight.network)
 [![Lace Wallet](https://img.shields.io/badge/Wallet-Lace%20(Midnight)-blue?style=for-the-badge)](https://www.lace.io/)
-[![License](https://img.shields.io/badge/License-Apache--2.0-green?style=for-the-badge)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-nightgate.netlify.app-success?style=for-the-badge)](https://nightgate.netlify.app)
 
-> **zk-Creator** is a privacy-first Web3 decentralized application built on the **Midnight Network**. It allows creators to publish exclusive research, alpha reports, and digital goods behind a zero-knowledge paywall—enabling users to unlock and decrypt content locally without broadcasting their wallet address, financial balances, or on-chain identity to the public ledger.
+> **NightGate** (formerly zk-Creator) is a privacy-first Web3 decentralized application built on the **Midnight Network**. It allows creators to publish exclusive research, alpha reports, and digital goods behind a zero-knowledge paywall—enabling users to unlock and decrypt content locally without broadcasting their wallet address, financial balances, or on-chain identity to the public ledger.
+
+---
+
+## 🌐 Live Demo & Screenshots
+**Try the live frontend here:** [nightgate.netlify.app](https://nightgate.netlify.app)  
+*(Note: Requires the Lace Wallet extension connected to the Midnight Preprod network).*
+
+![NightGate Dashboard](public/image.png)
 
 ---
 
 ## 🎯 The Problem
 
-In today's Web3 ecosystem, "token-gated" content platforms (Discord bots, Mirror, Guild.xyz) suffer from a critical privacy flaw:
-1. **Public Surveillance:** Unlocking gated content requires signing a message or making a transaction from a public wallet. This permanently links your real-world IP/identity to your on-chain financial portfolio.
-2. **Whale Phishing & Tracking:** High-net-worth investors, security auditors, and VIPs frequently avoid token-gated alpha because interacting with the smart contract flags their wallet for tracking, targeted exploits, and spam.
-3. **Identity Leaks for Sensitive Data:** Creators distributing sensitive research (e.g., zero-day vulnerability advisories, whistleblower leaks, or proprietary institutional research) have no way to verify qualified recipients without building a public list of everyone who accessed it.
+In today's Web3 ecosystem, "token-gated" content platforms (like Discord bots, Mirror, or Guild.xyz) suffer from a critical privacy flaw:
+1. **Public Surveillance:** Unlocking gated content requires signing a message or making a transaction from a public wallet. This permanently links your real-world IP/identity to your on-chain financial portfolio and reading habits.
+2. **Whale Phishing & Tracking:** High-net-worth investors, security auditors, and VIPs frequently avoid token-gated alpha because interacting with a public smart contract flags their wallet for tracking, targeted exploits, and spam.
+3. **Identity Leaks for Sensitive Data:** Creators distributing sensitive research (e.g., zero-day vulnerability advisories, whistleblower leaks, or proprietary institutional research) have no way to verify qualified recipients without building a public, surveillance-ready list of everyone who accessed it.
 
 ---
 
-## 🛡️ The Midnight Solution
+## 🛡️ Our Solution: NightGate on Midnight
 
-zk-Creator solves this by utilizing **Compact Smart Contracts** on Midnight:
+NightGate solves this dilemma by utilizing **Compact Smart Contracts** and local proving on the Midnight Network:
 
-```
+Instead of a public smart contract verifying your balance on-chain, NightGate flips the model. When a user requests access to content, their wallet passes their private state (balances, credentials) directly to a local prover running *inside their browser*. 
+
+The browser generates a cryptographic Zero-Knowledge Proof (zkSNARK) that essentially states: *"I mathematically meet the creator's requirements to view this content, but I will not tell you who I am or what my exact balance is."*
+
+This proof, alongside a completely anonymous cryptographic **Nullifier**, is submitted to the Midnight Ledger. The creator is guaranteed that the user is qualified, and the user enjoys 100% privacy.
+
+### Key Innovations:
+- **Zero Identity Disclosed:** The user's wallet address, token holdings, and private keys never leave their browser.
+- **Nullifier Protection:** Midnight's `disclose(nullifier)` mechanism prevents replay attacks and double-spending while preserving total recipient anonymity.
+- **Client-Side Proving:** Proving happens in the client environment, completely abstracting complex zkSNARK cryptography behind a clean, web2-like user experience.
+
+---
+
+## 🏗️ How We Built It (Architecture)
+
+```text
 [User Browser + Lace Wallet]
        │
        ▼ (1) Private Secret Derivation (Local WebCrypto Witness)
@@ -43,16 +66,8 @@ zk-Creator solves this by utilizing **Compact Smart Contracts** on Midnight:
 [Content Decrypted Locally in User's Browser]
 ```
 
-### Key Innovations:
-- **Zero Identity Disclosed:** The user's wallet address, token holdings, and private keys never leave their browser.
-- **Nullifier Protection:** Midnight's `disclose(nullifier)` mechanism prevents replay attacks and double-spending while preserving total recipient anonymity.
-- **Client-Side Proving:** Proving happens in the client environment, completely abstracting complex zkSNARK cryptography behind a clean user experience.
-
----
-
-## 🏗️ Architecture & Compact Smart Contract
-
-The core smart contract is written in Midnight's **Compact** domain-specific language ([`contracts/zk_creator.compact`](file:///c:/Users/karak/Downloads/midnight/zk-creator/contracts/zk_creator.compact)):
+### The Compact Smart Contract
+The core logic is written in Midnight's **Compact** language ([`contracts/zk_creator.compact`](zk-creator/contracts/zk_creator.compact)):
 
 ```rust
 export ledger total_unlocks: Counter;
@@ -75,83 +90,79 @@ export circuit unlock(user_secret: Bytes<32>): [] {
 }
 ```
 
-### Rational Privacy Model:
-| State Type | Data | Visibility |
-| :--- | :--- | :--- |
-| **Private Witness** | `user_secret` (Wallet seed/credential) | **Off-chain only** (Never leaves client browser) |
-| **Public Ledger** | `spent_nullifiers` (32-byte hashes) | **On-chain public** (Guarantees unique unlock) |
-| **Public Ledger** | `total_unlocks` (Counter) | **On-chain public** (Verifiable proof of creator traffic) |
+---
+
+## ✨ Features (What's in it right now)
+
+- **Zero-Knowledge Unlocks:** Instantly synthesize ZK proofs in the browser using the Lace wallet without exposing the user's public address.
+- **Visual Proving Lifecycle:** A terminal-style UI modal that displays real-time cryptographic stages (Witness extraction, constraint synthesis, SNARK generation) so users can understand the privacy mechanism.
+- **Private Artifact Inspector:** A post-unlock view that showcases the decrypted content alongside zero-knowledge metadata (e.g., `Circuit Hash`, `Nullifier Hash`, and the fact that `0 Bytes` of identity were disclosed).
+- **Midnight DApp Connector API:** Seamless integration with Lace wallet supporting `preprod`, `testnet`, and local fallback environments.
+- **Production-Ready Frontend:** A beautiful, responsive, and dynamic UI built with React, Vite, TailwindCSS, and deployed globally via Netlify Edge.
 
 ---
 
-## ⚡ Wave 1 Deliverables & Features Built
+## 🚀 What's Next (Roadmap & Upcoming Features)
 
-- [x] **Compact Circuit:** Implemented and compiled `zk_creator.compact` with deterministic nullifier hashing and standard library integration.
-- [x] **Midnight DApp Connector API:** Integrated Lace wallet detection supporting `preprod`, `testnet`, and local environments with automatic network fallback.
-- [x] **Local Witness Generation:** WebCrypto-powered SHA-256 deterministic witness derivation from the user's connected wallet and drop payload.
-- [x] **Visual Proving Lifecycle:** Terminal-style UI displaying real-time cryptographic stages (Witness extraction, constraint synthesis, SNARK generation, and nullifier disclosure).
-- [x] **Private Artifact Inspector:** Post-unlock modal showcasing the decrypted content alongside zero-knowledge metadata (`Circuit Hash`, `Nullifier Hash`, and `0 Bytes Identity Disclosed`).
-- [x] **Preprod Deploy Tooling:** Full `@midnight-ntwrk/midnight-js` deployment pipeline configured with automatic wallet state generation, sync tracking, and faucet integration.
+While Wave 1 focuses on the core zk-proving frontend and single-contract architecture, our roadmap for NightGate is expansive:
+
+1. **Multi-Asset Gating:** Allowing creators to gate content based on complex boolean logic (e.g., "Must hold 50 tNIGHT OR own X NFT").
+2. **Encrypted Decentralized Storage Integration:** Storing the encrypted content payloads on IPFS or Arweave, where the decryption keys are only released by the smart contract upon successful ZK verification.
+3. **Creator Analytics Dashboard:** Allowing creators to see *how many* users unlocked their content, and aggregated (but privacy-preserving) metadata about their audience, utilizing Midnight's shielded state.
+4. **Subscription Paywalls:** Transitioning from one-time content unlocks to recurring, privacy-preserving subscriptions using time-locked nullifiers.
+5. **Mobile Wallet Support:** Optimizing the ZK proving client for mobile environments as Midnight wallet ecosystem expands.
 
 ---
 
 ## 💻 Tech Stack
 
 - **Zero-Knowledge Core:** Midnight Network, Compact Language (v0.23+), Midnight.js SDK
-- **Frontend:** React 18, Vite, TypeScript
-- **Styling & UI:** Tailwind CSS, PostCSS, Lucide Icons, Glassmorphism aesthetic
-- **Wallet Support:** Lace Wallet (Midnight Edition)
-- **Local Tooling:** Docker proof-server container, Nethermind Preprod indexer
+- **Wallet & Authentication:** Lace Wallet, Midnight DApp Connector API
+- **Frontend Framework:** React 19, Vite, TanStack Router (SPA mode)
+- **Styling:** TailwindCSS v4, Radix UI Primitives, Framer Motion (Animations)
+- **Deployment & Hosting:** Netlify (Global CDN)
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Local Setup & Deployment
 
 ### Prerequisites
-- **Node.js**: v20 or v22 LTS
-- **Browser Extension**: [Lace Wallet](https://www.lace.io/) set to **Midnight Preprod**
-- **Docker Desktop**: (Optional, for running local proof-server)
+- Node.js v22 or later
+- Lace Wallet browser extension
+- (For Preprod) Access to the [Midnight Faucet](https://midnight-tmnight-preprod.nethermind.dev/)
 
-### Installation & Run
+### Installation
 
-1. **Clone & Install Dependencies:**
-   ```bash
-   git clone https://github.com/<your-username>/zk-creator.git
-   cd zk-creator
-   npm install
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/Yash-Karakoti/NightGate.git
+cd NightGate
 
-2. **Run the Frontend Application:**
-   ```bash
-   npm run dev
-   ```
-   Open `http://localhost:5173` in your browser.
+# Install dependencies
+npm install
 
-3. **Deploy the Smart Contract to Midnight Preprod (CLI):**
-   ```bash
-   # 1. Start the proof server (Docker required)
-   docker compose up -d proof-server
+# Run the frontend locally
+npm run dev
+```
 
-   # 2. Run the deployment script
-   npm run deploy -- --network preprod
-   ```
-   *The deployment script syncs with the Preprod ledger, generates your deployer wallet, and prompts you to fund it via the Midnight faucet.*
+### Smart Contract Deployment (Local / Preprod)
 
----
+```bash
+cd zk-creator
 
-## 🎬 Presentation & Demo Video Guide
+# Install contract dependencies
+npm install
 
-See the full presentation script and demonstration walk-through in [`presentation_script.md`](presentation_script.md).
+# Compile the Compact contract
+npm run compile
 
-### Quick Demo Flow for Judges:
-1. **Connect:** Click **Connect Lace Wallet** in the top right. App connects to Midnight Preprod.
-2. **Select Drop:** Browse the curated creator drops (e.g. *Zero-Day Exploit Post-Mortem*).
-3. **Synthesize Proof:** Click **Synthesize ZK Proof**. Watch the interactive proof terminal read private witness data and generate the SNARK.
-4. **Inspect Artifact:** Click **View Private Artifact** to verify that the nullifier was registered on-chain while 0 bytes of identity were revealed.
+# Deploy the contract to Preprod
+# (Ensure your local .midnight-state.json is funded via the faucet first)
+npm run deploy -- --network preprod
+```
 
----
-
-## 👥 Builderathon Team
-
-- Built for **Midnight Builderathon Wave 1**
-- Exploring privacy-preserving monetization primitives for the decentralized web.
+### Running Contract Tests
+```bash
+npm run test
+```
+*The test suite verifies the contract structure, ensures duplicate nullifiers are rejected, and validates the privacy invariants (raw secrets are never disclosed).*
