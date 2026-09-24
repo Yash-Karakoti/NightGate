@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.js",
+  "sourceRoot": "../../../../",
+  "sources": ["contracts/zk_creator.compact", "compiler/standard-library.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAAA;;;;;;;;;;MAwCA,AAAA,MAiBC;;;;;cAjBqB,aAAsB;;;;;;;;;;;;;;;;;;yCAAtB,aAAsB;;;;;;;mEAAtB,aAAsB;;;OAiB3C;;;;GACA;EA1DD;;;;;;;;;;;;;;;;;;;;;;;;;;;IAkCA;;;;;;;;;yEAAqC;IACrC;;;;;;;;;;yEAAwD;;;;;;;GAuBvD;EC1DD,AAAA,kBAAA;oEAAA;;;EDwCA,AAAA,SAiBC,4BAjBqB,aAAsB;UAGlC,WAAkD,0BAAZ,aAAW;UAMjD,qBAAyC,GAAV,WAAS;qDAGtC;;;;;;;;;;;4KAAwB,qBAAmB;;;;0HAA3B;;IAGxB;;;;;;;;;;2HAAwB,qBAAmB;;;;;;wEAA3B;UAChB,KAAa;IAAb;;;;;;;;;;6FAAA,KAAa;;;;wEAAA;;GAChB;;;;;;;;;;;;;;;;IAvBD;qCAAA;;;;;;;;;;;0GAAqC;KAAA;IACrC;;;;;uCAAA;;;;;;;;;;;;;;;;4GAAwD;;;;;;uCAAxD;;;;;;;;;;;;4GAAwD;;;;;;;;;;;;;;uCAAxD;;;;;;;;;;;;;;;4GAAwD;;;;;;;;;;;;;;uCAAxD;;;;;;;;;;;;;;;;;4GAAwD;;;;;;;;;KAAA;;;;;;;;;;"
+}

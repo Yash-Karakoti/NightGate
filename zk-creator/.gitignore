@@ -15,8 +15,8 @@ build/
 .env.test.local
 .env.production.local
 
-# Contract artifacts
-contracts/managed/
+# Contract artifacts (NOTE: managed/ is tracked in git for Midnight Rise submission)
+# contracts/managed/
 
 # Deployment info
 deployment.json
