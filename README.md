@@ -19,6 +19,16 @@
 
 ![NightGate Dashboard](public/image.png)
 
+### Successful Compile Output
+The contract compiles via `compact compile` producing 1 circuit (`unlock`):
+
+![Compile Output](public/screenshots/compile-output.png)
+
+### Contract Deployment
+Contract deployed to Midnight Preprod network with visible contract address:
+
+![Deployment Output](public/screenshots/deploy-output.png)
+
 ---
 
 ## 🎯 The Problem
@@ -91,6 +101,43 @@ export circuit unlock(user_secret: Bytes<32>): [] {
     total_unlocks.increment(1);
 }
 ```
+
+### 🔐 Public State vs Private Witness
+
+Understanding the separation between public and private data is the core privacy innovation of Midnight:
+
+| Category | Data | Stored Where | Who Can See It |
+|----------|------|-------------|----------------|
+| **Public State** (Ledger) | `total_unlocks: Counter` | On-chain (Midnight Preprod) | Everyone |
+| **Public State** (Ledger) | `spent_nullifiers: Map<Bytes<32>, Boolean>` | On-chain (Midnight Preprod) | Everyone |
+| **Private Witness** | `user_secret: Bytes<32>` | Client's browser memory ONLY | Nobody except the user |
+| **Derived (Disclosed)** | `nullifier = persistentHash(user_secret)` | On-chain after `disclose()` | Everyone (but unlinkable to identity) |
+
+**How it works in practice:**
+- The **user_secret** is a private witness — it is an input to the ZK circuit that *never* leaves the user's browser. It is not stored on-chain, not transmitted over the network, and not visible to anyone including the creator.
+- The **nullifier** (a one-way hash of the secret) is the *only* value that transitions from private to public via Midnight's `disclose()` primitive. This prevents double-claiming while revealing zero identity information.
+- The **spent_nullifiers map** and **total_unlocks counter** are public ledger state — anyone can verify that X users have unlocked content and that no nullifier has been reused, but *nobody* can determine *who* those users are.
+
+### 📦 Compiled Artifacts (`managed/` Directory)
+
+After running `compact compile`, the following artifacts are generated in `zk-creator/contracts/managed/zk_creator/`:
+
+```
+managed/zk_creator/
+├── compiler/         # Compiler metadata
+├── contract/         # Generated JS/TS contract bindings
+│   ├── index.js      # Runtime contract interface
+│   ├── index.d.ts    # TypeScript type definitions
+│   └── index.js.map  # Source map
+├── keys/             # ZK proving and verification keys
+│   ├── unlock.prover    # Prover key (~2.8MB) for generating ZK proofs
+│   └── unlock.verifier  # Verifier key (~2KB) for on-chain verification
+└── zkir/             # Zero-Knowledge Intermediate Representation
+    ├── unlock.zkir    # Human-readable circuit IR
+    └── unlock.bzkir   # Binary circuit IR
+```
+
+These artifacts are committed to the repository so that reviewers can verify the contract compiles and the circuits are generated correctly.
 
 ---
 
