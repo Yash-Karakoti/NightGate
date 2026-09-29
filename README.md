@@ -1,6 +1,6 @@
 # NightGate: Zero-Knowledge Content Paywall
 
-**Built for the Midnight Builderathon (Wave 1)**
+**Built for the Midnight Builderathon (Wave 1 & Wave 2)**
 
 [![Midnight Preprod](https://img.shields.io/badge/Midnight-Preprod-blueviolet?style=for-the-badge&logo=shield)](https://midnight.network)
 [![Compact Language](https://img.shields.io/badge/Smart%20Contracts-Compact%20v0.23-teal?style=for-the-badge)](https://docs.midnight.network)
@@ -10,6 +10,78 @@
 > **NightGate** (formerly zk-Creator) is a privacy-first Web3 decentralized application built on the **Midnight Network**. It allows creators to publish exclusive research, alpha reports, and digital goods behind a zero-knowledge paywall—enabling users to unlock and decrypt content locally without broadcasting their wallet address, financial balances, or on-chain identity to the public ledger.
 
 ---
+
+## 🏆 Level 2 & Level 3 Submission — Full Implementation & CI/CD
+
+[![CI Pipeline](https://github.com/Yash-Karakoti/NightGate/actions/workflows/ci.yml/badge.svg)](https://github.com/Yash-Karakoti/NightGate/actions/workflows/ci.yml)
+
+### 💡 Product Proposal (Level 3 Idea)
+**Category:** Confidential Credentials / Private Allowlist Access
+**Idea:** NightGate acts as a zero-knowledge content paywall where creators issue "access secrets" (credentials) for premium content. Users can prove they hold a valid, unspent credential to unlock the content without ever revealing their wallet address, identity, or the credential itself to the public ledger.
+
+### Privacy Claim (Observable Privacy Behavior)
+
+**NightGate proves that a user holds a valid, unused secret to access content — without revealing who they are, what their wallet balance is, or any identifying information.**
+
+**What an observer CAN learn:**
+- A valid unlock occurred (the `total_unlocks` counter increments).
+- A specific nullifier hash was spent (recorded in `spent_nullifiers`).
+
+**What an observer CANNOT learn:**
+- The identity or wallet address of the user who unlocked the content.
+- The raw credential (secret) that was used.
+- Any correlation between the user's Midnight/Cardano wallet and the content they consume.
+
+Specifically, the `unlock` circuit accepts a private `user_secret` (32 bytes) that never leaves the user's browser. The circuit:
+1. Hashes the secret via `persistentHash()` to derive a deterministic **nullifier**
+2. Calls `disclose(nullifier)` — making **only** the hash public on-chain
+3. Checks the nullifier is not already in `spent_nullifiers` (preventing double-use)
+4. Records the nullifier and increments the `total_unlocks` counter
+
+### Level 3 Checklist
+
+| Requirement | Status | Evidence |
+|-------------|--------|----------|
+| Fully functional dApp using privacy model | ✅ | Live demo at [nightgate.netlify.app](https://nightgate.netlify.app) |
+| Minimum 3 tests passing | ✅ | See `zk-creator/tests/zk_creator.test.ts` (Tests: structure, duplicates, privacy). Screenshot included in repo. |
+| CI/CD pipeline running | ✅ | GitHub Actions workflow (`.github/workflows/ci.yml`) passing |
+| Approved idea submitted | ✅ | "Confidential Credentials" (see Product Proposal above) |
+| Minimum 10 meaningful commits | ✅ | See GitHub commit history |
+
+### Level 2 Checklist
+
+| Requirement | Status | Evidence |
+|-------------|--------|----------|
+| Lace wallet connect / disconnect | ✅ | [`WalletConnect.tsx`](src/components/WalletConnect.tsx) + [`useMidnight.ts`](src/hooks/useMidnight.ts) via DApp Connector API |
+| Circuit called from frontend | ✅ | [`useMidnight.ts`](src/hooks/useMidnight.ts) → `findDeployedContract` → `callTx.unlock()` via Midnight.js SDK |
+| Observable privacy behavior | ✅ | See Privacy Claim above |
+| Contract deployed to Preprod | ✅ | Address: `d9feb2468cb2325da4bb6709d5b278631d3f113fda43265a032d21db4cb066db` |
+| Public GitHub repository | ✅ | [Yash-Karakoti/NightGate](https://github.com/Yash-Karakoti/NightGate) |
+| Live demo link | ✅ | [nightgate.netlify.app](https://nightgate.netlify.app) |
+| README documenting privacy claim | ✅ | This section |
+
+
+### SDK Integration (Level 2 — New)
+
+The frontend now uses the full **Midnight.js SDK** stack to call circuits on the deployed Preprod contract:
+
+```
+[User Browser]
+  └── useMidnight() hook
+        ├── DApp Connector API → wallet.connect('preprod')
+        ├── initializeProviders() builds MidnightProviders:
+        │     ├── publicDataProvider (indexer GraphQL)
+        │     ├── proofProvider (HTTP proof server)
+        │     ├── zkConfigProvider (FetchZkConfigProvider for prover keys)
+        │     ├── privateStateProvider (LevelDB / IndexedDB)
+        │     ├── walletProvider (balanceTx via DApp connector)
+        │     └── midnightProvider (submitTx via DApp connector)
+        ├── findDeployedContract(providers, { contractAddress, compiledContract })
+        └── contract.callTx.unlock(userSecret)
+              → Local ZK proof generation → Balance tx → Submit to Preprod
+```
+
+
 
 ## 🌐 Live Demo & Screenshots
 **Try the live frontend here:** [nightgate.netlify.app](https://nightgate.netlify.app)  
