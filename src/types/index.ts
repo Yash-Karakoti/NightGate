@@ -26,4 +26,5 @@ export type ProofState = {
   step: ProofStep;
   progress: number;
   nullifier: string;
+  txId?: string;
 };

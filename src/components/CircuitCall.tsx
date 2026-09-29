@@ -24,7 +24,9 @@ export function CircuitCall({ item, midnight, unlocked, onUnlock }: { item: Cont
     }
     setProof((current) => ({ ...current, step: "disclosing", progress: 100 }));
     const result = await midnight.generateProofAndUnlock(item.id);
-    setProof({ step: "success", progress: 100, nullifier: result.nullifier });
+    const successState: ProofState = { step: "success", progress: 100, nullifier: result.nullifier };
+    if (result.txId) successState.txId = result.txId;
+    setProof(successState);
     window.setTimeout(() => onUnlock(item.id, result.nullifier), 1800);
   };
 
@@ -86,6 +88,16 @@ export function CircuitCall({ item, midnight, unlocked, onUnlock }: { item: Cont
                   {proof.nullifier || "N/A"}
                   {copied ? <Check size={10} /> : <Copy size={10} />}
                 </button>
+              </div>
+              {proof.txId && (
+                <div className="flex items-center justify-between border-b border-border pb-2">
+                  <span className="text-muted-foreground">TX ID</span>
+                  <span className="text-foreground truncate max-w-[200px]" title={proof.txId}>{proof.txId.slice(0, 12)}...{proof.txId.slice(-8)}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between border-b border-border pb-2">
+                <span className="text-muted-foreground">CONTRACT</span>
+                <span className="text-foreground">d9feb246...4cb066db</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">IDENTITY DISCLOSED</span>
