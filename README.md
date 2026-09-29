@@ -15,6 +15,9 @@
 
 [![CI Pipeline](https://github.com/Yash-Karakoti/NightGate/actions/workflows/ci.yml/badge.svg)](https://github.com/Yash-Karakoti/NightGate/actions/workflows/ci.yml)
 
+### 🎥 Demo Video
+**Watch the 1-Minute Live Demo:** [https://youtu.be/CK3zBFsSE8Q](https://youtu.be/CK3zBFsSE8Q)
+
 ### 💡 Product Proposal (Level 3 Idea)
 **Category:** Confidential Credentials / Private Allowlist Access
 **Idea:** NightGate acts as a zero-knowledge content paywall where creators issue "access secrets" (credentials) for premium content. Users can prove they hold a valid, unspent credential to unlock the content without ever revealing their wallet address, identity, or the credential itself to the public ledger.
@@ -43,10 +46,11 @@ Specifically, the `unlock` circuit accepts a private `user_secret` (32 bytes) th
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
 | Fully functional dApp using privacy model | ✅ | Live demo at [nightgate.netlify.app](https://nightgate.netlify.app) |
-| Minimum 3 tests passing | ✅ | See `zk-creator/tests/zk_creator.test.ts` (Tests: structure, duplicates, privacy). Screenshot included in repo. |
+| Minimum 3 tests passing | ✅ | See `zk-creator/tests/zk_creator.test.ts` (Tests: structure, duplicates, privacy). Screenshot provided in submission. |
 | CI/CD pipeline running | ✅ | GitHub Actions workflow (`.github/workflows/ci.yml`) passing |
 | Approved idea submitted | ✅ | "Confidential Credentials" (see Product Proposal above) |
 | Minimum 10 meaningful commits | ✅ | See GitHub commit history |
+| Demo Video (1 min) | ✅ | [YouTube Link](https://youtu.be/CK3zBFsSE8Q) |
 
 ### Level 2 Checklist
 
