@@ -1,6 +1,6 @@
 # NightGate: Zero-Knowledge Content Paywall
 
-**Built for the Midnight Builderathon (Wave 1 & Wave 2)**
+**Built for the Midnight Builderathon**
 
 [![Midnight Preprod](https://img.shields.io/badge/Midnight-Preprod-blueviolet?style=for-the-badge&logo=shield)](https://midnight.network)
 [![Compact Language](https://img.shields.io/badge/Smart%20Contracts-Compact%20v0.23-teal?style=for-the-badge)](https://docs.midnight.network)
@@ -11,14 +11,14 @@
 
 ---
 
-## 🏆 Level 2 & Level 3 Submission — Full Implementation & CI/CD
+## 🏆 Hackathon Submission — Full Implementation & CI/CD
 
 [![CI Pipeline](https://github.com/Yash-Karakoti/NightGate/actions/workflows/ci.yml/badge.svg)](https://github.com/Yash-Karakoti/NightGate/actions/workflows/ci.yml)
 
 ### 🎥 Demo Video
-**Watch the 1-Minute Live Demo:** [https://youtu.be/CK3zBFsSE8Q](https://youtu.be/CK3zBFsSE8Q)
+**Watch the Full Live Demo:** [https://youtu.be/CK3zBFsSE8Q](https://youtu.be/CK3zBFsSE8Q)
 
-### 💡 Product Proposal (Level 3 Idea)
+### 💡 Product Proposal
 **Category:** Confidential Credentials / Private Allowlist Access
 **Idea:** NightGate acts as a zero-knowledge content paywall where creators issue "access secrets" (credentials) for premium content. Users can prove they hold a valid, unspent credential to unlock the content without ever revealing their wallet address, identity, or the credential itself to the public ledger.
 
@@ -41,31 +41,26 @@ Specifically, the `unlock` circuit accepts a private `user_secret` (32 bytes) th
 3. Checks the nullifier is not already in `spent_nullifiers` (preventing double-use)
 4. Records the nullifier and increments the `total_unlocks` counter
 
-### Level 3 Checklist
+### Requirements Checklist
 
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
 | Fully functional dApp using privacy model | ✅ | Live demo at [nightgate.netlify.app](https://nightgate.netlify.app) |
-| Minimum 3 tests passing | ✅ | See `zk-creator/tests/zk_creator.test.ts` (Tests: structure, duplicates, privacy). Screenshot provided in submission. |
-| CI/CD pipeline running | ✅ | GitHub Actions workflow (`.github/workflows/ci.yml`) passing |
-| Approved idea submitted | ✅ | "Confidential Credentials" (see Product Proposal above) |
-| Minimum 10 meaningful commits | ✅ | See GitHub commit history |
-| Demo Video (1 min) | ✅ | [YouTube Link](https://youtu.be/CK3zBFsSE8Q) |
-
-### Level 2 Checklist
-
-| Requirement | Status | Evidence |
-|-------------|--------|----------|
+| Contract deployed to Preprod | ✅ | Address: `d9feb2468cb2325da4bb6709d5b278631d3f113fda43265a032d21db4cb066db` |
 | Lace wallet connect / disconnect | ✅ | [`WalletConnect.tsx`](src/components/WalletConnect.tsx) + [`useMidnight.ts`](src/hooks/useMidnight.ts) via DApp Connector API |
 | Circuit called from frontend | ✅ | [`useMidnight.ts`](src/hooks/useMidnight.ts) → `findDeployedContract` → `callTx.unlock()` via Midnight.js SDK |
 | Observable privacy behavior | ✅ | See Privacy Claim above |
-| Contract deployed to Preprod | ✅ | Address: `d9feb2468cb2325da4bb6709d5b278631d3f113fda43265a032d21db4cb066db` |
+| Minimum 3 tests passing | ✅ | See `zk-creator/tests/zk_creator.test.ts`. See screenshot below. |
+| CI/CD pipeline running | ✅ | GitHub Actions workflow (`.github/workflows/ci.yml`) passing |
+| Approved idea submitted | ✅ | "Confidential Credentials" (see Product Proposal above) |
+| Meaningful commits | ✅ | See GitHub commit history |
+| Demo Video | ✅ | [YouTube Link](https://youtu.be/CK3zBFsSE8Q) |
 | Public GitHub repository | ✅ | [Yash-Karakoti/NightGate](https://github.com/Yash-Karakoti/NightGate) |
-| Live demo link | ✅ | [nightgate.netlify.app](https://nightgate.netlify.app) |
-| README documenting privacy claim | ✅ | This section |
 
+#### Contract Tests Output
+![Contract Tests Passing](public/screenshots/test-output.png)
 
-### SDK Integration (Level 2 — New)
+### SDK Integration
 
 The frontend now uses the full **Midnight.js SDK** stack to call circuits on the deployed Preprod contract:
 
